@@ -15,9 +15,6 @@ library(compiler)
 #source GAPIT v2
 source ("http://zzlab.net/GAPIT/gapit_functions.txt")
 source ("http://zzlab.net/GAPIT/emma.txt")
-####
-# Rajouter controle de saisie des 2 arguments
-#setwd("C:/Users/cherif/Dropbox/GWAS/DonnéesGBS Qat/LG19_DP10_88")
 
 args <- commandArgs(TRUE)
 #Trait arg

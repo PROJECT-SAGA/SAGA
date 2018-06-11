@@ -12,17 +12,10 @@ library(LDheatmap)
 library(genetics)
 library(compiler)
 
-#source("http://www.zzlab.net/GAPIT/previous/gapit_functions_20150515.txt")
-#source("http://zzlab.net/GAPIT/emma.txt")
-#source("http://bioinfo-web.mpl.ird.fr/sources_gapit/gapit_functions.txt") 
-#source("http://bioinfo-web.mpl.ird.fr/sources_gapit/emma.txt")
+#source GAPIT v2
 source("http://zzlab.net/GAPIT/gapit_functions.txt")
 source("http://zzlab.net/GAPIT/emma.txt")
-#source("http://bioinfo-web.mpl.ird.fr/sources_gapit_111016/gapit_functions.txt") 
-#source("http://bioinfo-web.mpl.ird.fr/sources_gapit_111016/emma.txt") 
-####
-# Rajouter controle de saisie des 2 arguments
-#setwd("C:/Users/cherif/Dropbox/GWAS/Données GBS Qat/LG19_DP10_88")
+
 args <- commandArgs(TRUE)
 
 myY  <- read.table(args[1], head = TRUE)
