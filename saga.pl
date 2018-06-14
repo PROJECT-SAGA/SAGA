@@ -47,8 +47,8 @@ my $geno_DP=10; # Minimum Depth of coverage (DP) at the sample level required fo
 my $geno_count=88; # Minimum sample's number required for the previous defined DP 
 my $snp_maf=0.05; # Minor allele frequency cut-off
 my $pvalue=5E-2; # P-value
-my $maxwin=10000; # Annotation window:Upstream and Downstream max positions (pb) 
-my $minwin=2000; # Annotation window:Upstream and Downstream min positions (pb) 
+my $maxwin=3000; # Annotation window:Upstream and Downstream max positions (pb) 
+my $minwin=1000; # Annotation window:Upstream and Downstream min positions (pb) 
 
 my $conf_file=$param{'-conf'};   # Config file containing settings    
 my $ref_file=$param{'-ref'};     # Reference sequence file (fasta format)
@@ -565,7 +565,6 @@ foreach my $gwas (@gapitCsvFiles)
    
       #### DEBUG PB CHR GAPITWT
       my $annot;
-      my $lastGene=0; 
       
       if (not ($snpeff_db eq "0") and not defined $annot)
       {
@@ -583,11 +582,23 @@ foreach my $gwas (@gapitCsvFiles)
                $annot="Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
                last;
             }
-            elsif ($lastGene !=0 and $tab[2] < $start and $tab[2] > $lastGene) # add window
+            elsif ($tab[2] < $start and $tab[2] > $start-$minwin) # add window
             {
-               $annot="Up Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
+               $annot="Up_Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
             }
-            $lastGene=$gff{"Chr$tab[1]"}{$start}{'stop'};
+            elsif ($tab[2] < $start-$minwin and $tab[2] > $start-$maxwin) # add window
+            {
+               $annot="Envt_Promot_Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
+            }
+            elsif ($tab[2] > $gff{"Chr$tab[1]"}{$start}{'stop'} and $tab[2] < $gff{"Chr$tab[1]"}{$start}{'stop'}+$minwin) # add window
+            {
+               $annot="Down_Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
+            }
+            elsif ($tab[2] > $gff{"Chr$tab[1]"}{$start}{'stop'}+$minwin and $tab[2] < $gff{"Chr$tab[1]"}{$start}{'stop'}+$maxwin) # add window
+            {
+               $annot="Envt_utr_Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
+            }
+   
          }
       }
       else { $annot = "na"; } #print}
@@ -595,7 +606,7 @@ foreach my $gwas (@gapitCsvFiles)
       if ($tab[3]<=$pvalue) #Select SNPs according the defined association pvalue and extract corresponding features 
       {
          
-         print SNPOUT "$tab[0]\tChr$tab[1]\t$tab[2]\t$tab[3]\t$tab[4]\t$tab[6]\t$tab[7]\t$tab[8]\t ---- $annot ----\n";
+         print SNPOUT "$tab[0]\tChr$tab[1]\t$tab[2]\t$tab[3]\t$tab[4]\t$tab[6]\t$tab[7]\t$tab[8]\t$annot\n";
       }
       else
       {
