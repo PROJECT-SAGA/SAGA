@@ -4,8 +4,8 @@ SAGA ....
 blablabla
 
 
-* [Installation manual](url)
-* [Manual](url)
+* [Installation manual](https://github.com/PROJECT-SAGA/SAGA/blob/master/INSTALL.md)
+* [User Manual](https://github.com/PROJECT-SAGA/SAGA/blob/master/MANUAL.md)
 
 
 ##  Contributing
