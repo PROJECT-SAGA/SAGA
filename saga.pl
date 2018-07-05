@@ -37,19 +37,35 @@ use File::Copy;
 use Bio::SearchIO;
 use Switch;
 
+
 my %param = @ARGV;
 
 ##########
 ########## CD : Verifier les parametres  a conserver ou pas in fine
 ##########
-my $phasing=0;
-my $geno_DP=10; # Minimum Depth of coverage (DP) at the sample level required for a minimum of number of sample
-my $geno_count=88; # Minimum sample's number required for the previous defined DP 
-my $snp_maf=0.05; # Minor allele frequency cut-off
-my $pvalue=5E-2; # P-value
-my $maxwin=3000; # Annotation window:Upstream and Downstream max positions (pb) 
-my $minwin=1000; # Annotation window:Upstream and Downstream min positions (pb) 
+my $phasing=0; # skip phasing step
 
+
+my $geno_DP=10; # Minimum Depth of coverage (DP) at the sample level required for a minimum of number of sample
+my $geno_percent=95; # Minimum percentage of sample required for the previous defined DP
+my $tot=0; # genotype percent filtering
+
+# vcf filtering
+my $snp_maf=0.05; # Minor allele frequency cut-off
+
+# GWAS methods by default else get from the file
+my $gapit="DEF"; # Run default GAPIT method using ECMLM by Li and et. al. (BMC Biology, 2014) 
+my $covar_file;  #Mendatory file tu run GAPIT with provided COVARIATE file
+my $super="MLM"; #Only for GAPIT SUPER GAWS method
+
+# GWAS filtering
+my $pvalue=5E-2; # P-value
+
+# Annotation
+my $maxwin=3000; # Annotation window:Upstream and Downstream max positions (pb) / Envt-UTR/Promt Gene
+my $minwin=1000; # Annotation window:Upstream and Downstream min positions (pb) / Up - dow gene (pb) 
+
+# Files
 my $conf_file=$param{'-conf'};   # Config file containing settings    
 my $ref_file=$param{'-ref'};     # Reference sequence file (fasta format)
 my $vcf_file=$param{'-vcf'};     # Input: VCF filename that will be read and analyzed
@@ -58,16 +74,15 @@ my $trait_file=$param{'-trait'}; # Trait file used by
 my $gff_file= defined($param{'-gff'}) ? $param{'-gff'} : 0;     # Gff file
 my $snpeff_db= defined ($param{'-snpeff'})? $param{'-snpeff'} : 0;
 
-$phasing=1 if defined ($param{'-phasing'});     # Gff file???????
+# if phasing option given, phasing step done
+$phasing=1 if defined ($param{'-phasing'});     
 
-#my $ACP_file=$param{'-pca'};     # PCA file
-#my $Kin_file=$param{'-kin'};     #Kinship file
 
 my $start_run=localtime();
 
+### DEBUG print "---- $gff_file ----- $snpeff_db -------";
 
-### DEBUG
-print "---- $gff_file ----- $snpeff_db -------";
+
 
 ############################################
 # Open log files where script is executed
@@ -149,17 +164,6 @@ else
 #Get the file path
 ############################################
 
-##########
-########## CD 2/06 : Si on decommente apres, tester l existence du fichier
-##########
-# Get the path oh the PCA file analysed
-#$ACP_file=`readlink -f $ACP_file` or die "#### $0 Error: readlink -f $ACP_file $!";
-#chomp $ACP_file;
-
-# Get the path oh the Kinship file analysed
-#$Kin_file=`readlink -f $Kin_file` or die "#### $0 Error: readlink -f $Kin_file $!";
-#chomp $Kin_file;
-
 
 ############################################
 #Open of the input conf file to get additional parameters
@@ -171,25 +175,56 @@ while (my $line=<CONF>)
    if ($line =~/^-([^\s]+)\s([^#\s]+).*$/)
    {
       switch ($1)
-      {      
+      {
+         #geno
          case "dp"   { $geno_DP=$2 }
-         case "c"    { $geno_count=$2 }
+         case "p"    { $geno_percent=$2 }
+         
+         #vcf
          case "maf"  { $snp_maf=$2 }
+         
+         #gapit result filtering
          case "pvalue" { $pvalue=$2}
+         
+         #annotation
+         case "maxwin" {$maxwin=$2}
+         case "minwin" {$minwin=$2}
+         
+         #gapit methods
+         case "GAPIT" {$gapit=$2}
+         case "cov_file" {$covar_file=$2}
+         case "SUPER_Option" {$super=$2}
       }
    }
 }
 
+#Checking if the Mendatory COVARIATE file GAPIT COV method is provided in the config file 
+if ($gapit eq "COV")
+{
+    if (not defined($covar_file))
+   {
+        print STDERR " #### $0 Error: GAPIT COV method has been chosen! The Covariate file is missing from the config file and must be provided \n\n";
+        exit;
+   }
+   
+   # Get the absolute path of files given by argument
+   $covar_file=`readlink -f $covar_file` or die "#### $0 Error: readlink -f $covar_file $!";
+   chomp $covar_file;
+}
 
-
-##########
-########## CD : Maj tous les parametres  a afficher une fois fixés
-##########
+#print"$covar_file \n\n";
 print "#### $0 Info: Used command options: \n
       -dp      $geno_DP 
-      -c       $geno_count
+      -p       $geno_percent
       -maf     $snp_maf 
-      -pvalue  $pvalue \n\n";
+      -pvalue  $pvalue
+      -GAPIT   $gapit";
+if ($gapit eq "SUPER")
+{
+   print "
+      -SUPER_Option $super \n\n";
+} 
+
 
 
 
@@ -235,7 +270,7 @@ my @tmpVcf= split /\//,$vcf_file;
 my $vcf_out= $tmpVcf[-1];
 my $vcf_prefix= $vcf_out;
 $vcf_prefix=~ s/\.vcf//;
-$vcf_out=$vcf_prefix."-DP".$geno_DP."-COUNT".$geno_count.".vcf";
+$vcf_out=$vcf_prefix."-DP".$geno_DP."-PERCENT".$geno_percent.".vcf";
 
 #Open the vcf files (input & output)
 print "#### $0 Info: Filtered VCF File : $vcf_out \n\n"; 
@@ -245,8 +280,15 @@ print "#### $0 Info: First SNPs filtering based on DP in progress \n\n";
 open (VCF,$vcf_file) or die "#### $0 Error: impossible to open $vcf_file \n";
 while (my$line=<VCF>)
 {     
-      if ($line =~ /^#/) # Select and print VCF header
+      if ($line =~ /^##/) # Select and print VCF header
       {
+         print VCFOUT $line;
+      }
+      elsif ($line=~ /^#CHROM/)
+      {
+         #Counting the total sample number
+         my @str= split /\t/,$line;
+         $tot= (scalar @str)-9;
          print VCFOUT $line;
       }
       elsif ($line=~ /\.\/\./) # Removing missing data
@@ -267,11 +309,16 @@ while (my$line=<VCF>)
             $count++ if ($genotype[2] >=$geno_DP); 
          }
          
-         print VCFOUT $line if ($count>=$geno_count); # The VCF file lines are printed if the chosen $geno_count condition is reached  
+         my $percent= ($count*100)/$tot;
+         
+         print VCFOUT $line if ($percent>=$geno_percent); # The VCF file lines are printed if the chosen $geno_percent condition is reached  
+
+         print VCFOUT $line if ($count>=$geno_percent); # The VCF file lines are printed if the chosen $geno_count condition is reached  
       } 
 }
 close VCF;
 close VCFOUT;
+
 
 print "#### $0 Info: First SNPs filtering based on DP was successfully done \n\n";
 print "#### $0 Info: $vcf_out has been sucessfully created \n\n";
@@ -283,11 +330,6 @@ my $vcftool=localtime();
 print "### Vcftoools has started at $vcftool \n\n";
 print "#### $0 Info: SNPs filtering based on minor allele frequency ( $snp_maf ) in progress \n\n";
 my $cmd="vcftools --vcf $saga_filter"."/"."$vcf_out --maf $snp_maf  --max-missing 1 --remove-filtered-geno-all --remove-filtered FILTER-QUAL --remove-filtered FILTER-DP --out $saga_filter"."/maf".$snp_maf."-".$vcf_out." --recode ";
-#my $cmd="vcftools --vcf $saga_filter"."/"."$vcf_out --maf $snp_maf  --max-missing 1 --remove-filtered-geno-all --remove-filtered LOW-QUAL --remove-filtered SnpCluster --out $saga_filter"."/maf".$snp_maf."-".$vcf_out." --recode ";
-#my $cmd="vcftools --vcf $saga_filter"."/"."$vcf_out --maf $snp_maf  --max-missing 1 --remove-filtered-geno-all --remove-indv PdMUE124 --out $saga_filter"."/maf".$snp_maf."-".$vcf_out." --recode ";
-#my $cmd="vcftools --vcf $saga_filter"."/"."$vcf_out --maf $snp_maf  --max-missing 1 --remove-filtered-geno-all --remove /data2/projects/gbsflowering/Bank/datremov.txt --out $saga_filter"."/maf".$snp_maf."-".$vcf_out." --recode ";
-#my $cmd="vcftools --vcf $saga_filter"."/"."$vcf_out --maf $snp_maf  --max-missing 1 --remove-filtered-geno-all --keep /data2/projects/gbsflowering/Bank/nigerKeep.txt --out $saga_filter"."/maf".$snp_maf."-".$vcf_out." --recode ";
-#my $cmd="vcftools --vcf $saga_filter"."/"."$vcf_out --maf $snp_maf  --max-missing 1 --remove-filtered-geno-all --keep /data2/projects/gbsflowering/Bank/DKeep.txt --out $saga_filter"."/maf".$snp_maf."-".$vcf_out." --recode ";
 print "$cmd \n\n";
 system ($cmd) and die ("#### $0 Error: vcftools step: $cmd");
 
@@ -323,9 +365,6 @@ if ($phasing)
    print "\n#### $0 Info: Imputing genotypes with gl argument was successfully done \n\n";
    print "#### $0 Info: $beaglout1.vcf.gz has been sucessfully created \n\n";
 
-   #Phasing and IBD steps
-   #print "#### $0 Info: Phasing genotypes and IBD segment detection with gt and ibd arguments in progress \n\n";
-   #my $beaglecmd2="java -Xmx20g -jar /usr/local/beagle-4.1/beagle.27Jul16.86a.jar gt=$saga_filter/$beaglout1.vcf.gz ibd=true out=$saga_filter/$beaglout2";
 
    print "#### $0 Info: Phasing genotypes with gt argument in progress \n\n";
 
@@ -335,10 +374,8 @@ if ($phasing)
    system ($beaglecmd2) and die ("#### $0 Error: Beagle gt step: $beaglecmd2");
 
    print "\n#### $0 Info: Phasing genotypes with gt was successfully done \n\n";
-   #print "\n#### $0 Info: Phasing genotypes and IBD segment detection with gt and ibd arguments were successfully done \n\n";
    print "#### $0 Info: $beaglout1.vcf.gz has been sucessfully created \n\n";
-   #print "#### $0 Info: $beaglout1.ibd has been sucessfully created \n\n";
-   #print "#### $0 Info: $beaglout1.hbd has been sucessfully created \n\n";
+
 
    #Decompressing step
    print "#### $0 Info: Decompressing $beaglout2.vcf.gz \n\n";
@@ -444,6 +481,47 @@ print "############     Step 3 GWAS Analysis GAPIT started at $step3     #######
 
 chdir $saga_gapit or die "#### $0 Error: Impossible to go into $saga_gapit directory $!";
 
+
+#print "#### $0 Info: GAPIT has sucessfully run \n\n";
+#Gapit analysis : One of the three GAPIT.R scripts is executed (GAPIT_Cov.R or GAPIT_SUPER.R or GAPIT_def.R)
+
+print "#### $0 Info: GWAS Analysis is running on $trait_file and $hapmap_file \n\n";
+
+if ($gapit eq "COV")
+{
+   print "#### $0 Info: GAPIT Using ECMLM by Li and et. al. (BMC Biology, 2014) with provided"." $gapit"."ARIATE file is running \n\n";
+    
+   my $Rcmd="Rscript /data2/projects/gbsflowering/SAGAGIT/Rscripts/GAPIT_Cov.R $trait_file $hapmap_file $covar_file";
+   print "#### $0 R command line: $Rcmd \n\n";
+   system ($Rcmd) and die ("#### $0 Error: GAPIT step: $Rcmd");
+
+   print "#### $0 Info: GAPIT Using ECMLM by Li and et. al. (BMC Biology, 2014) with provided"." $gapit"."ARIATE file has been successfully done \n\n";
+
+}
+elsif ($gapit eq "SUPER")
+{
+   print "#### $0 Info: GAPIT using $gapit GWAS method is running \n\n";
+
+    my $Rcmd="Rscript /data2/projects/gbsflowering/SAGAGIT/Rscripts/GAPIT_SUPER.R $trait_file $hapmap_file $super";
+    print "#### $0 R command line: $Rcmd \n\n";
+    system ($Rcmd) and die ("#### $0 Error: GAPIT step: $Rcmd");
+
+   print "#### $0 Info: GAPIT $gapit GWAS method has been sucessfully done \n\n";
+
+}
+else
+{
+   print "#### $0 Info: Default GAPIT $gapit Using ECMLM by Li and et. al. (BMC Biology, 2014) is running \n\n";
+
+    my $Rcmd="Rscript /data2/projects/gbsflowering/SAGAGIT/Rscripts/GAPIT_def.R $trait_file $hapmap_file";
+    print "#### $0 R command line: $Rcmd \n\n";
+    
+    system ($Rcmd) and die ("#### $0 Error: GAPIT step: $Rcmd");
+    
+   print "#### $0 Info: Default GAPIT $gapit Using ECMLM by Li and et. al. (BMC Biology, 2014) has been sucessfully done \n\n";
+}
+
+
 #Gapit analysis : the script GAPIT.R is executed
 print "#### $0 Info: GAPIT analysis is running on $trait_file and $ hapmap_file \n\n";
 
@@ -451,11 +529,11 @@ print "#### $0 Info: GAPIT analysis is running on $trait_file and $ hapmap_file 
 #my $Rcmd="Rscript /data2/projects/gbsflowering/perltoctoc/GAPIT_def.R $trait_file $hapmap_file";
 #my $Rcmd="Rscript /data2/projects/gbsflowering/SAGAGIT/GAPIT_SUPER.R $trait_file $hapmap_file"; 
 #my $Rcmd="Rscript /data2/projects/gbsflowering/SAGAGIT/GAPIT_Cov.R $trait_file $hapmap_file /data2/projects/gbsflowering/RICE/GAPIT.PCA.txt";  # CD
-my $Rcmd="Rscript /data2/projects/gbsflowering/perltoctoc/GAPIT.R $trait_file $hapmap_file /data2/projects/gbsflowering/RICE/GAPIT.PCA.txt";
+#my $Rcmd="Rscript /data2/projects/gbsflowering/perltoctoc/GAPIT.R $trait_file $hapmap_file /data2/projects/gbsflowering/RICE/GAPIT.PCA.txt";
 
-system ($Rcmd) and die ("#### $0 Error: GAPIT step: $Rcmd");
+#system ($Rcmd) and die ("#### $0 Error: GAPIT step: $Rcmd");
 
-print "#### $0 Info: GAPIT has sucessfully run \n\n";
+print "#### $0 Info: GAPIT has successfully run \n\n";
 
 
 ############################################################################################
@@ -498,9 +576,9 @@ else
             $gff{$line[0]}{$line[3]}{'annot'}=$line[8];
          }
    }
-   #print "!!!!!!!!!!!!!! %gff\n";
-   #print Dumper(\%gff);
-   #print "!!!!!!!!!!!!!! FIN %gff\n";
+   print "!!!!!!!!!!!!!! %gff\n";
+   print Dumper(\%gff);
+   print "!!!!!!!!!!!!!! FIN %gff\n";
 }
 
 #Rename GAPIT file
@@ -539,8 +617,8 @@ foreach my $gwas (@gapitCsvFiles)
    
    # open the file that will contain the SNP selected after filtering and blast annotation,
    open (SNPOUT,">".$saga_Trait_Annot."/".$tmp[1]."_snp.select.csv") or die "#### $0 Error: Cannot create the file : ".$tmp[1]."_snp.select.csv. $!";
-   #print SNPOUT "LG\tSNP_Position\tSNP_Position\tSNP_ID\tP.value" ."\t". "maf" ."\t". "Rsquare.of.Model.without.SNP\tRsquare.of.Model.with.SNP\tFDR Adjusted P-values\n";
-   
+   print SNPOUT "Pseudomol\tSNP_ID\tSNP_Position\tP.value" ."\t". "maf" ."\t". "Rsquare.of.Model.without.SNP\tRsquare.of.Model.with.SNP\tFDR Adjusted P-values\n";
+
    # open the file that will contain the SNP non selecting after filtering step
    open (discSNP,">".$saga_Trait_Annot."/".$tmp[1]."_discard.snp.csv") or die "#### $0 Error: Cannot create the file : ".$tmp[1]."_discard.snp.csv. $!";
    
@@ -561,7 +639,7 @@ foreach my $gwas (@gapitCsvFiles)
       $gwastab{$tab[0]}{'posi'}=$tab[2];
       chomp $tab[8];
       $gwastab{$tab[0]}{'file'}=$tab[3]."\t".$tab[4]."\t".$tab[6]."\t".$tab[7]."\t".$tab[8];
-
+      my ($chr,$pos) = split /_/, $tab[0];
    
       #### DEBUG PB CHR GAPITWT
       my $annot;
@@ -573,30 +651,32 @@ foreach my $gwas (@gapitCsvFiles)
       }
       elsif (not ($gff_file eq "0"))
       {
-         #print "!!!!!!!!!!!!!! GFF GWAS1 $tab[1]\n";  
-         foreach my $start (sort {$a <=> $b} keys % { $gff{"Chr".$tab[1]} })
+         
+         #print "!!!!!!!!!!!!!! GFF GWAS1 $tab[1]\n";
+  
+         foreach my $start (sort {$a <=> $b} keys % { $gff{$chr} })#$gff{"Chr".$tab[1]} })
          {
             #print "!!!!!!!!!!!!!! GFF GWAS1 $tab[1] - $start ---- ".$gff{"Chr".$tab[1]}{$start}{'stop'}." ----\n";  
-            if ($tab[2] > $start and $tab[2] < $gff{"Chr$tab[1]"}{$start}{'stop'})
+            if ($tab[2] > $start and $tab[2] < $gff{$chr}{$start}{'stop'})
             {
-               $annot="Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
+               $annot="Gene $start-".$gff{$chr}{$start}{'stop'}." (".$gff{$chr}{$start}{'annot'};
                last;
             }
             elsif ($tab[2] < $start and $tab[2] > $start-$minwin) # add window
             {
-               $annot="Up_Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
+               $annot="Up_Gene $start-".$gff{$chr}{$start}{'stop'}." (".$gff{$chr}{$start}{'annot'};
             }
             elsif ($tab[2] < $start-$minwin and $tab[2] > $start-$maxwin) # add window
             {
-               $annot="Envt_Promot_Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
+               $annot="Envt_Promot_Gene $start-".$gff{$chr}{$start}{'stop'}." (".$gff{$chr}{$start}{'annot'};
             }
-            elsif ($tab[2] > $gff{"Chr$tab[1]"}{$start}{'stop'} and $tab[2] < $gff{"Chr$tab[1]"}{$start}{'stop'}+$minwin) # add window
+            elsif ($tab[2] > $gff{$chr}{$start}{'stop'} and $tab[2] < $gff{$chr}{$start}{'stop'}+$minwin) # add window
             {
-               $annot="Down_Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
+               $annot="Down_Gene $start-".$gff{$chr}{$start}{'stop'}." (".$gff{$chr}{$start}{'annot'};
             }
-            elsif ($tab[2] > $gff{"Chr$tab[1]"}{$start}{'stop'}+$minwin and $tab[2] < $gff{"Chr$tab[1]"}{$start}{'stop'}+$maxwin) # add window
+            elsif ($tab[2] > $gff{$chr}{$start}{'stop'}+$minwin and $tab[2] < $gff{$chr}{$start}{'stop'}+$maxwin) # add window
             {
-               $annot="Envt_utr_Gene $start-".$gff{"Chr$tab[1]"}{$start}{'stop'}." (".$gff{"Chr$tab[1]"}{$start}{'annot'};
+               $annot="Envt_utr_Gene $start-".$gff{$chr}{$start}{'stop'}." (".$gff{$chr}{$start}{'annot'};
             }
    
          }
@@ -605,8 +685,8 @@ foreach my $gwas (@gapitCsvFiles)
          
       if ($tab[3]<=$pvalue) #Select SNPs according the defined association pvalue and extract corresponding features 
       {
-         
-         print SNPOUT "$tab[0]\tChr$tab[1]\t$tab[2]\t$tab[3]\t$tab[4]\t$tab[6]\t$tab[7]\t$tab[8]\t$annot\n";
+         print SNPOUT "$chr\t$tab[0]\t$tab[2]\t$tab[3]\t$tab[4]\t$tab[6]\t$tab[7]\t$tab[8]\t$annot\n";
+         #print SNPOUT "$tab[0]\tChr$tab[1]\t$tab[2]\t$tab[3]\t$tab[4]\t$tab[6]\t$tab[7]\t$tab[8]\t$annot\n";
       }
       else
       {
