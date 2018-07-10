@@ -313,7 +313,7 @@ while (my$line=<VCF>)
          
          print VCFOUT $line if ($percent>=$geno_percent); # The VCF file lines are printed if the chosen $geno_percent condition is reached  
 
-         print VCFOUT $line if ($count>=$geno_percent); # The VCF file lines are printed if the chosen $geno_count condition is reached  
+           
       } 
 }
 close VCF;
