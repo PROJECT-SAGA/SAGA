@@ -37,6 +37,7 @@ use File::Copy;
 use Bio::SearchIO;
 use Switch;
 
+use config; #saga configuration module
 
 my %param = @ARGV;
 
@@ -329,7 +330,7 @@ print "#### $0 Info: $vcf_out has been sucessfully created \n\n";
 my $vcftool=localtime();
 print "### Vcftoools has started at $vcftool \n\n";
 print "#### $0 Info: SNPs filtering based on minor allele frequency ( $snp_maf ) in progress \n\n";
-my $cmd="vcftools --vcf $saga_filter"."/"."$vcf_out --maf $snp_maf  --max-missing 1 --remove-filtered-geno-all --remove-filtered FILTER-QUAL --remove-filtered FILTER-DP --out $saga_filter"."/maf".$snp_maf."-".$vcf_out." --recode ";
+my $cmd="$vcftools --vcf $saga_filter"."/"."$vcf_out --maf $snp_maf  --max-missing 1 --remove-filtered-geno-all --remove-filtered FILTER-QUAL --remove-filtered FILTER-DP --out $saga_filter"."/maf".$snp_maf."-".$vcf_out." --recode ";
 print "$cmd \n\n";
 system ($cmd) and die ("#### $0 Error: vcftools step: $cmd");
 
@@ -358,7 +359,7 @@ if ($phasing)
    #Imputing step
    print "#### $0 Info: Imputing genotypes with gl argument in progress \n\n";
 
-   my $beaglecmd="java -Xmx20g -jar /usr/local/beagle-4.1/beagle.27Jul16.86a.jar gl=$saga_filter/$recode out=$saga_filter/$beaglout1";
+   my $beaglecmd="$beagle gl=$saga_filter/$recode out=$saga_filter/$beaglout1";
    print "$beaglecmd \n\n";
    system ($beaglecmd) and die ("#### $0 Error: Beagle gl step: $beaglecmd");
    
@@ -368,7 +369,7 @@ if ($phasing)
 
    print "#### $0 Info: Phasing genotypes with gt argument in progress \n\n";
 
-   my $beaglecmd2="java -Xmx20g -jar /usr/local/beagle-4.1/beagle.27Jul16.86a.jar gt=$saga_filter/$beaglout1.vcf.gz out=$saga_filter/$beaglout2";
+   my $beaglecmd2="$beagle gt=$saga_filter/$beaglout1.vcf.gz out=$saga_filter/$beaglout2";
 
    print "$beaglecmd2 \n\n";
    system ($beaglecmd2) and die ("#### $0 Error: Beagle gt step: $beaglecmd2");
@@ -403,7 +404,7 @@ if (not ($snpeff_db eq "0"))
    #Launch SNPeff
    print "#### $0 Info: SNPeff on ( $beaglout2 ) is running \n\n";
 
-   my $snpeffCmd="java -jar /usr/local/snpEff-4.2/snpEff.jar $snpeff_db $saga_filter"."/"."$beaglout2 > $saga_filter"."/".$beaglout2.".SNPeff.vcf";
+   my $snpeffCmd="$snpeff $snpeff_db $saga_filter"."/"."$beaglout2 > $saga_filter"."/".$beaglout2.".SNPeff.vcf";
    print "$snpeffCmd \n\n";
    system ($snpeffCmd) and die ("#### $0 Error: SNPeff step: $snpeffCmd");
 
@@ -421,7 +422,7 @@ print "############     Step 3 Format conversion VCFtoHapMap started at $step2  
 #Creation of hapmap file from vcftools output (vcf)using GATK VariantsToTable
 print "#### $0 Info: GATK VariantsToTable on ( $beaglout2 ) is running \n\n";
 
-my $GATKcmd="java  -Xmx20g -jar /usr/local/gatk-3.6/GenomeAnalysisTK.jar -R $ref_file -T VariantsToTable -V $saga_filter/$beaglout2 -F CHROM -F POS -F ID -F REF -F ALT  -o $saga_filter/".$tab.".table -GF GT -AMD";
+my $GATKcmd="$gatk -R $ref_file -T VariantsToTable -V $saga_filter/$beaglout2 -F CHROM -F POS -F ID -F REF -F ALT  -o $saga_filter/".$tab.".table -GF GT -AMD";
 print "$GATKcmd \n\n";
 system ($GATKcmd) and die ("#### $0 Error: GATK VariantsToTable step: $GATKcmd");
 
@@ -491,7 +492,7 @@ if ($gapit eq "COV")
 {
    print "#### $0 Info: GAPIT Using ECMLM by Li and et. al. (BMC Biology, 2014) with provided"." $gapit"."ARIATE file is running \n\n";
     
-   my $Rcmd="Rscript /data2/projects/gbsflowering/SAGAGIT/Rscripts/GAPIT_Cov.R $trait_file $hapmap_file $covar_file";
+   my $Rcmd="Rscript $RScripts/GAPIT_Cov.R $trait_file $hapmap_file $covar_file";
    print "#### $0 R command line: $Rcmd \n\n";
    system ($Rcmd) and die ("#### $0 Error: GAPIT step: $Rcmd");
 
@@ -502,7 +503,7 @@ elsif ($gapit eq "SUPER")
 {
    print "#### $0 Info: GAPIT using $gapit GWAS method is running \n\n";
 
-    my $Rcmd="Rscript /data2/projects/gbsflowering/SAGAGIT/Rscripts/GAPIT_SUPER.R $trait_file $hapmap_file $super";
+    my $Rcmd="Rscript $RScripts/GAPIT_SUPER.R $trait_file $hapmap_file $super";
     print "#### $0 R command line: $Rcmd \n\n";
     system ($Rcmd) and die ("#### $0 Error: GAPIT step: $Rcmd");
 
@@ -513,7 +514,7 @@ else
 {
    print "#### $0 Info: Default GAPIT $gapit Using ECMLM by Li and et. al. (BMC Biology, 2014) is running \n\n";
 
-    my $Rcmd="Rscript /data2/projects/gbsflowering/SAGAGIT/Rscripts/GAPIT_def.R $trait_file $hapmap_file";
+    my $Rcmd="Rscript $RScripts/GAPIT_def.R $trait_file $hapmap_file";
     print "#### $0 R command line: $Rcmd \n\n";
     
     system ($Rcmd) and die ("#### $0 Error: GAPIT step: $Rcmd");
