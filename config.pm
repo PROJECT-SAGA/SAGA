@@ -49,4 +49,5 @@ our $snpeff = "$java -jar /usr/local/snpEff-4.2/snpEff.jar";                    
 our $gatk = "$java -Xmx20g -jar /usr/local/GenomeAnalysisTK.jar";                   # = "$java putGatkPath"; #/usr/local/gatk-3.6/GenomeAnalysisTK.jar 
 our $RScripts = "/data2/projects/gbsflowering/SAGAGIT/Rscripts/";                   # = "putRScriptsPath"; 
 #our $gapit = " ";
+#our R = " ";
 
