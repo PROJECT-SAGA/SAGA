@@ -28,7 +28,12 @@
 #
 ###################################################################################################################################
 
-
+#### TO DO
+#### snpeff : gestion 2 lignes csv / buvable
+#### aide 
+#### filtered vcftools -> PASS
+#### %missing data
+#### singularity
 
 use strict;       
 use warnings;
