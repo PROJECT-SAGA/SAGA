@@ -1,0 +1,761 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SAGA</class>
+ <widget class="QMainWindow" name="SAGA">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>721</width>
+    <height>657</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>SAGA</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="welcomeLabel">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Welcome In SAGA V1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QFrame" name="gffsnpeffFrame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QComboBox" name="gffsnpeffComboBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select output files types&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select output files types&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>SNPEFF database</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>GFF File</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QFrame" name="SNPEFFFrame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_20">
+          <item row="0" column="0">
+           <widget class="QLabel" name="SNPEFFLabel">
+            <property name="minimumSize">
+             <size>
+              <width>150</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>SNPEFF database</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="loadSNPEFFPushButton">
+            <property name="minimumSize">
+             <size>
+              <width>119</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>119</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Load file</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="SNPEFFLineEdit">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>500</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;
+Number of population maximum for DAPC. (Warning: R script colours contain only 10 values increase numbre if you select more than 10.)&lt;br/&gt;
+An optinal integer indicating the number of clusters to be sought.&lt;br/&gt;
+If provided, the function will only run K-means once, for this number of clusters.&lt;br/&gt;
+If left as NULL, several K-means are run for a range of k (number of clusters) values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QFrame" name="GFFFrame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_19">
+          <item row="0" column="0">
+           <widget class="QLabel" name="GFFLabel">
+            <property name="minimumSize">
+             <size>
+              <width>150</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>GFF File</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="loadGFFPushButton">
+            <property name="minimumSize">
+             <size>
+              <width>119</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>119</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Load file</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="GFFLineEdit">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>500</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;
+Number of population maximum for DAPC. (Warning: R script colours contain only 10 values increase numbre if you select more than 10.)&lt;br/&gt;
+An optinal integer indicating the number of clusters to be sought.&lt;br/&gt;
+If provided, the function will only run K-means once, for this number of clusters.&lt;br/&gt;
+If left as NULL, several K-means are run for a range of k (number of clusters) values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="2">
+     <widget class="QFrame" name="SGEFrame">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>102</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>102</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="2" column="0">
+        <widget class="QFrame" name="SGEparamFrame">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>47</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>47</height>
+          </size>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_21">
+          <item row="0" column="0">
+           <widget class="QLabel" name="SGEparamLabel">
+            <property name="minimumSize">
+             <size>
+              <width>150</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>SGE parameters</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="SGEParamLineEdit">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>500</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;
+Number of population maximum for DAPC. (Warning: R script colours contain only 10 values increase numbre if you select more than 10.)&lt;br/&gt;
+An optinal integer indicating the number of clusters to be sought.&lt;br/&gt;
+If provided, the function will only run K-means once, for this number of clusters.&lt;br/&gt;
+If left as NULL, several K-means are run for a range of k (number of clusters) values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="SGECheckBox">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;this program use genebank files to down load sequences&lt;/p&gt;&lt;p&gt;if you want to keep this files, check the box&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;this program use genebank files to down load sequences&lt;/p&gt;&lt;p&gt;if you want to keep this files, check the box&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>SGE</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="2">
+     <widget class="QPushButton" name="resetPushButton">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>27</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>700</width>
+        <height>27</height>
+       </size>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;run the programm&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;run the programm&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Reset</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="2">
+     <widget class="QPushButton" name="runPushButton">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>27</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>700</width>
+        <height>27</height>
+       </size>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;run the programm&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;run the programm&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Run</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QFrame" name="mandatoryFrame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="VCFLabel">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>VCF File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="referenceLabel">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Reference File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QCheckBox" name="phasingCheckBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;this program use genebank files to down load sequences&lt;/p&gt;&lt;p&gt;if you want to keep this files, check the box&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;this program use genebank files to down load sequences&lt;/p&gt;&lt;p&gt;if you want to keep this files, check the box&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Phasing</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="configLabel">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Configuration File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="vcfLineEdit">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>500</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;
+Number of population maximum for DAPC. (Warning: R script colours contain only 10 values increase numbre if you select more than 10.)&lt;br/&gt;
+An optinal integer indicating the number of clusters to be sought.&lt;br/&gt;
+If provided, the function will only run K-means once, for this number of clusters.&lt;br/&gt;
+If left as NULL, several K-means are run for a range of k (number of clusters) values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="loadConfigPushButton">
+         <property name="minimumSize">
+          <size>
+           <width>119</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>119</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Load file</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLineEdit" name="configLineEdit">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>500</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;
+Number of population maximum for DAPC. (Warning: R script colours contain only 10 values increase numbre if you select more than 10.)&lt;br/&gt;
+An optinal integer indicating the number of clusters to be sought.&lt;br/&gt;
+If provided, the function will only run K-means once, for this number of clusters.&lt;br/&gt;
+If left as NULL, several K-means are run for a range of k (number of clusters) values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="traitLabel">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Trait File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QPushButton" name="loadTraitPushButton">
+         <property name="minimumSize">
+          <size>
+           <width>119</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>119</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Load file</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="loadReferencePushButton">
+         <property name="minimumSize">
+          <size>
+           <width>119</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>119</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Load file</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="loadVCFPushButton">
+         <property name="minimumSize">
+          <size>
+           <width>119</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>119</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file dialog to load list accession file (.txt)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Load file</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLineEdit" name="referenceLineEdit">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>500</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;
+Number of population maximum for DAPC. (Warning: R script colours contain only 10 values increase numbre if you select more than 10.)&lt;br/&gt;
+An optinal integer indicating the number of clusters to be sought.&lt;br/&gt;
+If provided, the function will only run K-means once, for this number of clusters.&lt;br/&gt;
+If left as NULL, several K-means are run for a range of k (number of clusters) values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="3">
+        <widget class="QLineEdit" name="traitLineEdit">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>500</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;
+Number of population maximum for DAPC. (Warning: R script colours contain only 10 values increase numbre if you select more than 10.)&lt;br/&gt;
+An optinal integer indicating the number of clusters to be sought.&lt;br/&gt;
+If provided, the function will only run K-means once, for this number of clusters.&lt;br/&gt;
+If left as NULL, several K-means are run for a range of k (number of clusters) values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
